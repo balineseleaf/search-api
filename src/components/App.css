@@ -1,0 +1,27 @@
+.App {
+  text-align: center;
+  font-family: Helvetica, Arial , sans-serif;
+  color: #000;
+}
+
+.App-content {
+  max-width: 1240px;
+  margin: 90px auto;
+}
+
+.App-search {
+  display: flex;
+  margin-bottom: 24px;
+}
+
+.App-card {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-bottom: 48px;
+}
+
+.App-header {
+  font-size: 60px;
+  margin: 50px auto;
+}
