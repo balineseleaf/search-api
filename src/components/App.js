@@ -1,10 +1,9 @@
 import "./App.css";
-import { Button } from "./Button"; // можно и без фигурных скобок, но тогда надо в самом компоненте экспортировать с default. Тут мы достаем объект с полями
-import { Input } from "./Input";
-import { Card } from "./Card";
-import { Spinner } from "./Spinner";
 import { React, useEffect, useState } from "react";
 import Api from "../utils/Api";
+import { Route, Routes, Navigate } from "react-router-dom";
+import Main from "./Main";
+import Photo from "./Photo";
 
 function App() {
   const [cards, setCards] = useState([]); // возвращает UseState массив из 2 элементов
@@ -28,15 +27,16 @@ function App() {
     if (isSubmitted) {
       //если true, то делаем запрос на сервер , в конце переводим в false и уже запрос не повториться
       Api.search(searchQuery)
-        .then((res) => {
-          const cardsFromApi = res.results.map((item) => ({
-            id: item.id,
-            src: item.urls.regular,
-            alt: item.alt_description,
-            title: item.description,
-            subtitle: item.user.name,
-          }));
-          setCards(cardsFromApi);
+        .then((data) => {
+          setCards(
+            data.results.map((item) => ({
+              id: item.id,
+              src: item.urls.regular,
+              alt: item.alt_description,
+              title: item.description,
+              subtitle: item.user.name,
+            }))
+          );
         })
         .finally(() => setIsSubmitted(false));
     } // Независимо от того,как выполнился запрос, с ошибкой или нормально, в конце, отключаем спиннер
@@ -47,30 +47,26 @@ function App() {
   //  для компонента Button: у нас обработчик - это функция, а не результат ее вызова... мы не можем просто написать setSearchQuery,
   //  иначе она вызовется при рендере кнопки сразу, до клика еще. Используем () => функция
 
+  //BrowserRouter предоставляет history API удобный, чтобы стрелочками могли туда-сюда управлять в самом браузере по истории посещения страниц
+
   return (
     <div className="App">
-      <div className="App-content">
-        <h1 className="App-header">Search API</h1>
-        <form className="App-search" onSubmit={handleSubmit}>
-          <Input
-            placeholder="Type search text"
-            onChange={handleChange}
-            value={searchQuery}
-          />
-          <Button type="submit" title="Search">
-            <span>Search</span>
-          </Button>
-        </form>
-        {isSubmitted ? (
-          <Spinner />
-        ) : (
-          <div className="App-card">
-            {cards.map(({ id, ...props }) => (
-              <Card key={id} {...props} />
-            ))}
-          </div>
-        )}
-      </div>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <Main
+              handleChange={handleChange}
+              handleSubmit={handleSubmit}
+              searchQuery={searchQuery}
+              isSubmitted={isSubmitted}
+              cards={cards}
+            />
+          }
+        />
+        <Route path="/photos/:id" element={<Photo photos={cards} />} />
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
     </div>
   );
 }
