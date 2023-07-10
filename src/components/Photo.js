@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import "./Photo.css";
 
 const Photo = ({ photos }) => {
@@ -8,11 +8,18 @@ const Photo = ({ photos }) => {
   // деструктуризируем наш айдишник.
   const photo = getPhotoById(photos, id); // фото,пришедшие с бэкенда и айдишник из адресной строки !!!
 
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate("/"); //(-1) по истории даст в браузере переходить
+  };
+
   return (
     <div>
       <Link className="Photo-goback" to="/">
-        --Go Back
+        &larr; Go Back
       </Link>
+      <button onClick={handleClick}>Аналог Go Back</button>
       {photo ? (
         <>
           <img className="Photo-img" src={photo.src} alt={photo.alt} />
